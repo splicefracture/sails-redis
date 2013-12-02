@@ -4,13 +4,17 @@
 
 var assert = require('assert'),
     Adapter = require('../../'),
-    Support = require('../support')(Adapter);
+    Support = require('../support')(Adapter),
+    Transaction = require('../../lib/transaction.js');
 
 /**
  * Raw waterline-redis `.drop()` tests
  */
 
 describe('adapter `.drop()`', function() {
+    
+  _transaction = new Transaction();
+    
   before(function(done) {
     var definition = {
       id: {
@@ -35,7 +39,8 @@ describe('adapter `.drop()`', function() {
   });
 
   it('should create all index sets', function(done) {
-    Adapter._transaction.exec(done, function(callback) {
+
+    _transaction.exec(done, function(callback) {
       var redis = this;
 
       redis.exists('waterline:drop:_meta', function(err, exists) {
@@ -60,7 +65,7 @@ describe('adapter `.drop()`', function() {
     Adapter.drop('drop', function(err) {
       assert(!err);
 
-      Adapter._transaction.exec(done, function(callback) {
+      _transaction.exec(done, function(callback) {
         var redis = this;
 
         redis.exists('waterline:drop:_meta', function(err, exists) {
